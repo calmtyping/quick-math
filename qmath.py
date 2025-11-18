@@ -1,5 +1,6 @@
 import argparse
 from time import perf_counter
+import time
 import random
 
 
@@ -58,7 +59,15 @@ def print_math_problem(operation, top_operand, bottom_operand):
         print(f" {problem_underline * (width-1)}")
 
 
+def create_start_timestamp():
+     start_time = round(perf_counter(), 2)
+     return start_time
 
+def check_timeleft(start_time, test_timelimit):
+    current_time = round(perf_counter(), 2)
+    time_elapsed = current_time - start_time
+    timeleft = test_timelimit - time_elapsed
+    return timeleft
 
 def main():
 
@@ -67,15 +76,32 @@ def main():
     parser.add_argument(
         "operation",
         type=operation_normalizer,
-        help="Math operation type. Examples: *, /, +, -") 
+        help="Math operation type. Examples: *, /, +, -")
+    
+    parser.add_argument(
+        "time",
+        type=int,
+        help="Amount of time the math test should last")
     
 
     args = parser.parse_args()
 
     operation = (args.operation)
+    test_timelimit = (args.time)
+
 
     top_operand, bottom_operand = generate_operands(digits)
     print_math_problem(operation, top_operand, bottom_operand)
+
+
+    start_time = create_start_timestamp()
+    print(start_time)
+    timeleft = check_timeleft(start_time, test_timelimit)
+
+    while(timeleft > 0):
+        timeleft = check_timeleft(start_time, test_timelimit)
+        print(timeleft)
+        time.sleep(5)
 
 if __name__ == "__main__":
     main()
