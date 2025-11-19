@@ -44,16 +44,17 @@ def create_operand(digits):
     return random.randint(minRange,maxRange)
 
 
-def generate_operands(digits):
+def create_math_problem(digits, operation):
         top_operand = create_operand(digits)
         bottom_operand = create_operand(digits)
 
-        return top_operand, bottom_operand
+        return top_operand, bottom_operand, operation
 
 
 problem_underline = "-"
 width = 3 + digits
-def print_math_problem(operation, top_operand, bottom_operand):
+def print_math_problem(math_problem):
+        top_operand, bottom_operand, operation = math_problem
         print(f"{top_operand:>{width}}")
         print(f" {operation}{bottom_operand:>{width-2}}")
         print(f" {problem_underline * (width-1)}")
@@ -68,6 +69,36 @@ def check_timeleft(start_time, test_timelimit):
     time_elapsed = current_time - start_time
     timeleft = test_timelimit - time_elapsed
     return timeleft
+
+def check_answer(user_answer, math_problem):
+     top_operand, bottom_operand, operation = math_problem
+
+     if operation in "+":
+          correct = top_operand + bottom_operand
+
+     if user_answer == correct:
+          return "Correct"
+     else:
+          return "Incorrect"
+
+def run_math_test(operation, test_timelimit):
+    start_time = create_start_timestamp()
+    timeleft = check_timeleft(start_time, test_timelimit)
+    while(timeleft > 0):
+        math_problem = create_math_problem(digits, operation)
+        print_math_problem(math_problem)
+        user_answer = int(input())
+        correctness = check_answer(user_answer, math_problem)
+        timeleft = check_timeleft(start_time, test_timelimit)
+        if(timeleft <= 0):
+             print("Sorry but time is up!")
+             print(f"Your answer was {correctness} though!")
+             return 0
+        else:
+             print(correctness)
+
+    print("times up!")
+
 
 def main():
 
@@ -89,19 +120,7 @@ def main():
     operation = (args.operation)
     test_timelimit = (args.time)
 
-
-    top_operand, bottom_operand = generate_operands(digits)
-    print_math_problem(operation, top_operand, bottom_operand)
-
-
-    start_time = create_start_timestamp()
-    print(start_time)
-    timeleft = check_timeleft(start_time, test_timelimit)
-
-    while(timeleft > 0):
-        timeleft = check_timeleft(start_time, test_timelimit)
-        print(timeleft)
-        time.sleep(5)
+    run_math_test(operation, test_timelimit)
 
 if __name__ == "__main__":
     main()
