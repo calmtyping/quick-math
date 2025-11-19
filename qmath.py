@@ -2,9 +2,6 @@ import argparse
 from random import randint
 from time import perf_counter
 
-digits = 2
-
-
 def operation_normalizer(inputOperation: str) -> str:
 
     inputOperation = inputOperation.lower()
@@ -47,15 +44,15 @@ def create_math_problem(digits, operation):
     top_operand = create_operand(digits)
     bottom_operand = create_operand(digits)
 
-    return top_operand, bottom_operand, operation
-
-
-problem_underline = "-"
-width = 3 + digits
+    return top_operand, bottom_operand, operation, digits
 
 
 def print_math_problem(math_problem):
-    top_operand, bottom_operand, operation = math_problem
+    top_operand, bottom_operand, operation, digits = math_problem
+
+    width = 3 + digits
+    problem_underline = "-"
+
     print(f"{top_operand:>{width}}")
     print(f" {operation}{bottom_operand:>{width-2}}")
     print(f" {problem_underline * (width-1)}")
@@ -74,7 +71,7 @@ def check_timeleft(start_time, test_timelimit):
 
 
 def check_answer(user_answer, math_problem):
-    top_operand, bottom_operand, operation = math_problem
+    top_operand, bottom_operand, operation, digits = math_problem
 
     if operation in "+":
         correct = top_operand + bottom_operand
@@ -85,7 +82,7 @@ def check_answer(user_answer, math_problem):
         return "Incorrect"
 
 
-def run_math_test(operation, test_timelimit):
+def run_math_test(operation, test_timelimit, digits):
     start_time = create_start_timestamp()
     timeleft = check_timeleft(start_time, test_timelimit)
     while timeleft > 0:
@@ -118,12 +115,19 @@ def main():
         "time", type=int, help="Amount of time the math test should last"
     )
 
+    parser.add_argument(
+        "digits", type=int, help="Amount of digits generated math problems should have"
+    )
+
     args = parser.parse_args()
 
     operation = args.operation
     test_timelimit = args.time
+    digits = args.digits
 
-    run_math_test(operation, test_timelimit)
+
+
+    run_math_test(operation, test_timelimit, digits)
 
 
 if __name__ == "__main__":
