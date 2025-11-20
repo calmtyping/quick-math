@@ -1,6 +1,8 @@
 import argparse
 from random import randint
 from time import perf_counter
+import sys
+
 
 def operation_normalizer(inputOperation: str) -> str:
 
@@ -70,8 +72,8 @@ def check_timeleft(start_time, test_timelimit):
     return timeleft
 
 
-def check_answer(user_answer, math_problem):
-    top_operand, bottom_operand, operation, digits = math_problem
+def check_answer_correctness(user_answer, math_problem):
+    top_operand, bottom_operand, operation, _digits = math_problem
 
     if operation in "+":
         correct = top_operand + bottom_operand
@@ -82,19 +84,49 @@ def check_answer(user_answer, math_problem):
         return "Incorrect"
 
 
+def user_answer_validator(user_answer):
+    user_answer = user_answer.strip().lower()
+
+    try:
+        return int(user_answer)
+    except ValueError:
+        print("Answers can only be an integer! (Type 'q' or 'quit' to end test.)")
+        return "INVALID"
+
+def quit_if_user_wants_to(user_input):
+    if user_input in ("q", "quit"):
+        print("Goodbye!")
+        sys.exit(0)
+
 def run_math_test(operation, test_timelimit, digits):
     start_time = create_start_timestamp()
     timeleft = check_timeleft(start_time, test_timelimit)
+
     while timeleft > 0:
         math_problem = create_math_problem(digits, operation)
         print_math_problem(math_problem)
-        user_answer = int(input())
-        correctness = check_answer(user_answer, math_problem)
+        user_input = input()
+
+        quit_if_user_wants_to(user_input)
+
+        user_answer = user_answer_validator(user_input)
+
+        while user_answer == "INVALID":
+            user_input = input()
+
+            quit_if_user_wants_to(user_input)
+
+            user_answer = user_answer_validator(user_input)
+            timeleft = check_timeleft(start_time, test_timelimit)
+            if timeleft <= 0:
+                print("Sorry, times up! That still wasn't an integer!")
+                return
         timeleft = check_timeleft(start_time, test_timelimit)
+        correctness = check_answer_correctness(user_answer, math_problem)
         if timeleft <= 0:
             print("Sorry but time is up!")
             print(f"Your answer was {correctness} though!")
-            return 0
+            return
         else:
             print(correctness)
 
@@ -124,8 +156,6 @@ def main():
     operation = args.operation
     test_timelimit = args.time
     digits = args.digits
-
-
 
     run_math_test(operation, test_timelimit, digits)
 
