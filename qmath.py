@@ -75,8 +75,15 @@ def check_timeleft(start_time, test_timelimit):
 def check_answer_correctness(user_answer, math_problem):
     top_operand, bottom_operand, operation, _digits = math_problem
 
-    if operation in "+":
+    assert operation in {"+", "-", "*", "/"}, \
+        f"Unexpected operation: {operation}. Check operation_normalizer"
+
+    if operation == "+":
         correct = top_operand + bottom_operand
+    elif operation == "-":
+        correct = top_operand - bottom_operand
+    elif operation == "*":
+        correct = top_operand * bottom_operand
 
     if user_answer == correct:
         return "Correct"
@@ -94,6 +101,7 @@ def user_answer_validator(user_answer):
         return "INVALID"
 
 def quit_if_user_wants_to(user_input):
+    user_input = user_input.strip().lower()
     if user_input in ("q", "quit"):
         print("Goodbye!")
         sys.exit(0)
